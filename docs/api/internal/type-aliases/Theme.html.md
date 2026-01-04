@@ -1,0 +1,7 @@
+# Type Alias: Theme
+
+> **Theme**: `"light"` \| `"dark"`
+
+## Defined in
+
+[models.ts:1935](https://github.com/lunitrixx/livecodes/blob/1f84d1b27bc55a00aefc468ad1efbe0b8a17528c/src/sdk/models.ts#L1935)

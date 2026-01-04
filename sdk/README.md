@@ -1,8 +1,6 @@
-[![Ceasefire_Now-techforpalestine.org](https://img.shields.io/badge/%F0%9F%87%B5%F0%9F%87%B8_Ceasefire_Now-techforpalestine.org-D83838?color=D83838)](https://www.techforpalestine.org)
-
 # LiveCodes
 
-Code Playground That Just Works!
+A Code Playground That Just Works!
 
 <p align="center">
 <img width="300" src="https://dev.livecodes.io/docs/img/livecodes-logo.svg"></img>
@@ -13,11 +11,19 @@ A [feature-rich](https://livecodes.io/docs/features/), open-source, **client-sid
 [![LiveCodes: uptime status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/live-codes/upptime/master/api/live-codes/uptime.json)](https://status.livecodes.io)
 [![LiveCodes: app version](https://img.shields.io/github/v/release/live-codes/livecodes?label=app)](https://livecodes.io)
 [![LiveCodes: npm version](https://img.shields.io/npm/v/livecodes)](https://www.npmjs.com/package/livecodes)
-[![LiveCodes: npm downloads](https://img.shields.io/npm/dw/livecodes)](https://www.npmjs.com/package/livecodes)
-[![LiveCodes: languages](https://img.shields.io/badge/languages-91-blue)](https://livecodes.io/docs/languages/)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d39f15618e048db9d13c2a0e8002b33)](https://www.codacy.com/gh/live-codes/livecodes/dashboard?utm_source=github.com&utm_medium=referral&utm_content=live-codes/livecodes&utm_campaign=Badge_Grade)
+[![LiveCodes: npm downloads](https://img.shields.io/npm/dm/livecodes)](https://www.npmjs.com/package/livecodes)
+[![LiveCodes: jsdelivr downloads](https://data.jsdelivr.com/v1/package/npm/livecodes/badge?style=rounded)](https://www.jsdelivr.com/package/npm/livecodes)
+[![LiveCodes: languages](https://img.shields.io/badge/languages-97-blue)](https://livecodes.io/docs/languages/)
+[![LiveCodes: docs](https://img.shields.io/badge/Documentation-575757?logo=gitbook&logoColor=white)](https://livecodes.io/docs/)
+[![LiveCodes: llms.txt](https://img.shields.io/badge/llms.txt-575757?logo=googledocs&logoColor=white)](https://livecodes.io/docs/llms.txt)
+[![LiveCodes: llms-full.txt](https://img.shields.io/badge/llms--full.txt-575757?logo=googledocs&logoColor=white)](https://livecodes.io/docs/llms-full.txt)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d39f15618e048db9d13c2a0e8002b33)](https://app.codacy.com/gh/live-codes/livecodes/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Lokalise: translated](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/live-codes/lokalise-badge/main/badges/translated.json)](https://app.lokalise.com/public/34958094667a72e9454592.95108106/)
+[![Lokalise: UI languages](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/live-codes/lokalise-badge/main/badges/languages.json)](https://app.lokalise.com/public/34958094667a72e9454592.95108106/)
 [![license - MIT](https://img.shields.io/github/license/live-codes/livecodes)](https://github.com/live-codes/livecodes/blob/develop/LICENSE)
-[![LiveCodes: GitHub repo](https://img.shields.io/github/stars/live-codes/livecodes?style=social)](https://github.com/live-codes/livecodes)
+[![LiveCodes: GitHub repo](https://img.shields.io/github/stars/live-codes/livecodes?style=flat&logo=github)](https://github.com/live-codes/livecodes)
+[![LiveCodes: GitHub repo](https://img.shields.io/github/forks/live-codes/livecodes?style=flat&logo=github)](https://github.com/live-codes/livecodes)
+[![Follow us on X (formerly Twitter)](https://img.shields.io/badge/Follow%20@livecodes__io-575757?logo=x)](https://x.com/livecodes_io)
 
 [Try it now on livecodes.io](https://livecodes.io)
 
@@ -25,9 +31,9 @@ A [feature-rich](https://livecodes.io/docs/features/), open-source, **client-sid
 
 [What makes LiveCodes different?](https://livecodes.io/docs/why)
 
-![LiveCodes list of languages screenshot](https://dev.livecodes.io/docs/img/screenshots/livecodes-languages.jpg)
+![LiveCodes list of languages screenshot](https://dev.livecodes.io/docs/img/screenshots/livecodes-overview.jpg)
 
-## Code Playground That Just Works!
+## A Code Playground That Just Works!
 
 - No servers to configure (or pay for!)
 - No databases to maintain (or pay for!)
@@ -79,7 +85,7 @@ Add this code to your page:
 #### Self-hosted
 
 1. Download a [release](https://github.com/live-codes/livecodes/releases)
-2. Put it on a static file server (for free!) <sup><a href="https://pages.cloudflare.com/" target="_blank" rel="noopener">1</a>, <a href="https://vercel.com/" target="_blank" rel="noopener">2</a>, <a href="https://www.netlify.com/" target="_blank" rel="noopener">3</a>, <a href="https://firebase.google.com/" target="_blank" rel="noopener">4</a>, <a href="https://pages.github.com/" target="_blank" rel="noopener">5</a></sup>
+2. Put it on a static file server (for free!) <sup><a href="https://pages.cloudflare.com/" target="_blank" rel="noopener">1</a>, <a href="https://www.netlify.com/" target="_blank" rel="noopener">2</a>, <a href="https://firebase.google.com/" target="_blank" rel="noopener">3</a>, <a href="https://pages.github.com/" target="_blank" rel="noopener">4</a></sup>
 
    <sup>Check the guide for <a href="https://livecodes.io/docs/features/self-hosting" target="_blank" rel="noopener">self-hosting</a> (including the built-in setup to deploy to GitHub Pages).</sup>
 
@@ -186,6 +192,23 @@ Vue SDK example: ([open in LiveCodes](https://livecodes.io/?x=code/N4IgLglmA2CmI
 </template>
 ```
 
+In addition, the SDK allows creating links to playgrounds:
+
+```js
+import { getPlaygroundUrl } from 'livecodes';
+
+const url = getPlaygroundUrl({
+  config: {
+    markup: {
+      language: 'markdown',
+      content: '# Hello World!',
+    },
+  },
+});
+
+console.log(url);
+```
+
 See [SDK docs](https://livecodes.io/docs/sdk/) for more details.
 
 ## Documentations
@@ -196,11 +219,31 @@ https://livecodes.io/docs/
 
 The documentations include demos, code samples, screenshots, [Storybook](https://livecodes.io/stories) and [TypeScript types](https://livecodes.io/docs/sdk/js-ts#typescript-types).
 
+## Updates
+
+Keep up with the latest changes:
+
+- Twitter/X: [@livecodes_io](https://twitter.com/livecodes_io)
+- Blog: [blog.livecodes.io](https://blog.livecodes.io/)
+- Development build: [dev.livecodes.io](https://dev.livecodes.io/)
+
+## Feedback
+
+We welcome feedback!
+
+Please start a new [issue](https://github.com/live-codes/livecodes/issues/new/choose) or [discussion](https://github.com/live-codes/livecodes/discussions/new).
+
+For security reports please refer to [SECURITY.md](https://github.com/live-codes/livecodes/blob/develop/SECURITY.md).
+
+You may also reach out to us using the [contact form](https://livecodes.io/docs/contact).
+
 ## Contribution
 
 Contributions are welcome and highly appreciated.
 
-Please refer to the [contribution guide](https://github.com/live-codes/livecodes/blob/HEAD/CONTRIBUTING.md)
+A huge shout-out to our wonderful [contributors](https://github.com/live-codes/livecodes/graphs/contributors)! Your hard work makes all the difference!
+
+Please refer to the [contribution guide](https://github.com/live-codes/livecodes/blob/HEAD/CONTRIBUTING.md).
 
 ## Credits
 
@@ -227,8 +270,13 @@ LiveCodes uses services that are generously provided by:
 </img></a><br /><br />
 </p>
 <p>
-<a href="https://codeium.com/" target="_blank" title="Codeium">
-  <img alt="Codeium" width="200" src="https://dev.livecodes.io/docs/img/credits/codeium.svg">
+<a href="https://windsurf.com/" target="_blank" title="Windsurf">
+  <img alt="Windsurf" width="200" src="https://dev.livecodes.io/docs/img/credits/windsurf.svg">
+</img></a><br /><br />
+</p>
+<p>
+<a href="https://m.do.co/c/fb8c00b45b91" target="_blank" title="DigitalOcean">
+  <img alt="DigitalOcean" width="200" src="https://dev.livecodes.io/docs/img/credits/digital-ocean.svg">
 </img></a><br /><br />
 </p>
 <p>
@@ -244,6 +292,11 @@ LiveCodes uses services that are generously provided by:
 <p>
 <a href="https://github.com/" target="_blank" title="GitHub">
   <img alt="GitHub" width="200" src="https://dev.livecodes.io/docs/img/credits/github.png">
+</img></a><br /><br />
+</p>
+<p>
+<a href="https://netlify.com/" target="_blank" title="Netlify">
+  <img alt="Netlify" width="200" src="https://dev.livecodes.io/docs/img/credits/netlify.svg">
 </img></a><br /><br />
 </p>
 <p>
@@ -264,6 +317,11 @@ LiveCodes uses services that are generously provided by:
 <p>
 <a href="https://www.browserstack.com/" target="_blank" title="BrowserStack">
   <img alt="BrowserStack" width="200" src="https://dev.livecodes.io/docs/img/credits/browserstack.svg">
+</img></a><br /><br />
+</p>
+<p>
+<a href="https://lokalise.com/" target="_blank" title="Lokalise">
+  <img alt="Lokalise" width="200" src="https://dev.livecodes.io/docs/img/credits/lokalise.png">
 </img></a><br /><br />
 </p>
 

@@ -1,0 +1,25 @@
+# Type Alias: WatchDestroy()
+
+> **WatchDestroy**: (`event`, `fn`) => `object`
+
+## Parameters
+
+• **event**: `"destroy"`
+
+• **fn**
+
+## Returns
+
+`object`
+
+### remove()
+
+> **remove**: () => `void`
+
+#### Returns
+
+`void`
+
+## Defined in
+
+[models.ts:263](https://github.com/lunitrixx/livecodes/blob/1f84d1b27bc55a00aefc468ad1efbe0b8a17528c/src/sdk/models.ts#L263)
