@@ -1,7 +1,4 @@
 
-declare module 'livecodes/__tests__/getPlaygroundUrl.test' {
-    export {};
-}
 declare module 'livecodes' {
     import type { Code, Config, EmbedOptions, Language, Playground } from 'livecodes/models';
     export type { Code, Config, EmbedOptions, Language, Playground };
@@ -23,9 +20,6 @@ declare module 'livecodes' {
         *
         * @param {EmbedOptions} options - The [options](https://livecodes.io/docs/sdk/js-ts#embed-options) for the playground.
         * @return {string} - The URL of the playground (as a string).
-        *
-        * large objects like config and params are store in the url hash params while the rest are in the search params
-        * unless config is a string in which case it is stored in searchParams
         */
     export function getPlaygroundUrl(options?: EmbedOptions): string;
 }
@@ -136,13 +130,12 @@ declare module 'livecodes/models' {
                 * See [docs](https://livecodes.io/docs/sdk/js-ts#show) for details.
                 * @example
                 * await playground.show("style");
-                * await playground.show("toggle-result");
                 * await playground.show("result", { full: true });
                 * await playground.show("script");
                 * await playground.show("result", { zoom: 0.5 });
                 * await playground.show("console", { full: true });
                 */
-            show: (panel: EditorId | 'editor' | 'result' | 'toggle-result' | Tool['name'], options?: {
+            show: (panel: EditorId | Tool['name'] | 'result', options?: {
                     full?: boolean;
                     line?: number;
                     column?: number;
@@ -364,21 +357,11 @@ declare module 'livecodes/models' {
                 */
             config?: Partial<Config> | string;
             /**
-                * If `true`, the playground is loaded in [headless mode](https://livecodes.io/docs/sdk/headless).
-                * @default false
-                */
-            headless?: boolean;
-            /**
                 * A resource to [import](https://livecodes.io/docs/features/import) (from any of the supported [sources](https://livecodes.io/docs/features/import#sources)).
                 */
             import?: string;
             /**
-                * @deprecated
-                *
-                * Use `{ config: { mode: "lite" } }` instead
-                *
                 * If `true`, the playground is loaded in [lite mode](https://livecodes.io/docs/features/lite).
-                * @default false
                 */
             lite?: boolean;
             /**
@@ -387,24 +370,19 @@ declare module 'livecodes/models' {
                 * - `"eager"`: The playground loads immediately.
                 * - `"lazy"`: A playground embedded low down in the page will not load until the user scrolls so that it approaches the viewport.
                 * - `"click"`: The playground does not load automatically. Instead, a "Click-to-load" screen is shown.
+                *
                 * @default "lazy"
                 */
             loading?: 'lazy' | 'click' | 'eager';
             /**
                 * A [starter template](https://livecodes.io/docs/features/templates) to load.
-                * Allowed valued can be found [here](https://livecodes.io/docs/api/internal/type-aliases/TemplateName).
+                * Allowed valued can be found [here](https://livecodes.io/docs/api/modules/internal#templatename).
                 */
             template?: TemplateName;
             /**
-                * @deprecated
-                *
-                * The `view` option has been moved to `config.view`.
-                * For headless mode use `headless: true`.
-                *
                 * The [default view](https://livecodes.io/docs/features/default-view) for the playground.
                 *
                 * When set to `"headless"`, the playground is loaded in [headless mode](https://livecodes.io/docs/sdk/headless).
-                * @default "split"
                 */
             view?: 'split' | 'editor' | 'result' | 'headless';
     }
@@ -503,7 +481,7 @@ declare module 'livecodes/models' {
             /**
                 * List of enabled [CSS processors](https://livecodes.io/docs/features/css/#css-processors).
                 *
-                * For the list of available processors, see [Processor](https://livecodes.io/docs/api/internal/type-aliases/Processor)
+                * For the list of available processors, see [Processor](https://livecodes.io/docs/api/modules/internal/#processor)
                 */
             processors: Processor[];
             /**
@@ -596,15 +574,10 @@ declare module 'livecodes/models' {
                 */
             allowLangChange: boolean;
             /**
-                * Sets the [default view](https://livecodes.io/docs/features/default-view) for the playground.
-                * @default "split"
-                */
-            view?: 'split' | 'editor' | 'result';
-            /**
                 * Sets the [display mode](https://livecodes.io/docs/features/display-modes).
                 * @default "full"
                 */
-            mode: 'full' | 'focus' | 'lite' | 'simple' | 'editor' | 'codeblock' | 'result';
+            mode: 'full' | 'focus' | 'simple' | 'editor' | 'codeblock' | 'result';
             /**
                 * Sets enabled and active tools and status of [tools pane](https://livecodes.io/docs/features/tools-pane).
                 * @default { enabled: "all", active: "", status: "" }
@@ -681,35 +654,21 @@ declare module 'livecodes/models' {
                 * If `true`, the [welcome screen](https://livecodes.io/docs/features/welcome) is displayed when the app loads.
                 */
             welcome: boolean;
-            /**
-                * Sets the app UI language used.
-                */
-            appLanguage: AppLanguage | undefined;
     }
     export interface EditorConfig {
             /**
                 * Selects the [code editor](https://livecodes.io/docs/features/editor-settings#code-editor) to use.
                 *
-                * If `undefined` (the default), Monaco editor is used on desktop,
-                * CodeMirror is used on mobile and in `simple` mode,
-                * while CodeJar is used in `codeblock` mode, in `lite` mode and in `readonly` playgrounds.
-                *
-                * If set to `auto`, Monaco editor is used on desktop and CodeMirror is used on mobile regardless of other settings.
-                *
+                * If `undefined` (the default), Monaco editor is used on desktop, CodeMirror is used on mobile
+                * and CodeJar is used in codeblocks, in lite mode and in readonly playgrounds.
                 * @default undefined
                 */
-            editor: 'monaco' | 'codemirror' | 'codejar' | 'auto' | undefined;
+            editor: 'monaco' | 'codemirror' | 'codejar' | undefined;
             /**
                 * Sets the app [theme](https://livecodes.io/docs/features/themes) to light/dark mode.
                 * @default "dark"
                 */
             theme: Theme;
-            /**
-                * Sets the app theme color.
-                * If `undefined`, it is set to `"hsl(214, 40%, 50%)"`.
-                * @default undefined
-                */
-            themeColor: string | undefined;
             /**
                 * Sets the [code editor](https://livecodes.io/docs/features/editor-settings) themes.
                 *
@@ -727,7 +686,7 @@ declare module 'livecodes/models' {
                 */
             fontFamily: string | undefined;
             /**
-                * Sets the font size.
+                * Sets the [code editor](https://livecodes.io/docs/features/editor-settings) font size.
                 *
                 * If `undefined` (the default), the font size is set to 14 for the full app and 12 for [embeds](https://livecodes.io/docs/features/embeds).
                 * @default undefined
@@ -751,17 +710,12 @@ declare module 'livecodes/models' {
                 * Show line numbers in [code editor](https://livecodes.io/docs/features/editor-settings).
                 * @default true
                 */
-            lineNumbers: boolean | 'relative';
+            lineNumbers: boolean;
             /**
                 * Enables word-wrap for long lines.
                 * @default false
                 */
             wordWrap: boolean;
-            /**
-                * When set to `true`, regions marked by `#region` and `#endregion` comments are folded when the project is loaded.
-                * @default false
-                */
-            foldRegions: boolean;
             /**
                 * Use auto-complete to close brackets and quotes.
                 * @default true
@@ -841,19 +795,24 @@ declare module 'livecodes/models' {
                     serverUrl: string;
                     userToken?: string;
             };
-            codeToImagePreset?: Record<string, any>;
     }
     /**
         * Language name, alias or extension.
         */
-    export type Language = 'html' | 'htm' | 'markdown' | 'md' | 'mdown' | 'mkdn' | 'mdx' | 'astro' | 'pug' | 'jade' | 'haml' | 'asciidoc' | 'adoc' | 'asc' | 'mustache' | 'handlebars' | 'hbs' | 'ejs' | 'eta' | 'nunjucks' | 'njk' | 'liquid' | 'liquidjs' | 'dot' | 'twig' | 'vento' | 'vto' | 'art-template' | 'art' | 'jinja' | 'bbcode' | 'bb' | 'mjml' | 'diagrams' | 'diagram' | 'graph' | 'plt' | 'richtext' | 'rte' | 'rich' | 'rte.html' | 'css' | 'scss' | 'sass' | 'less' | 'stylus' | 'styl' | 'stylis' | 'postcss' | 'javascript' | 'js' | 'json' | 'babel' | 'es' | 'sucrase' | 'typescript' | 'flow' | 'ts' | 'jsx' | 'tsx' | 'react' | 'react-jsx' | 'react.jsx' | 'react-tsx' | 'react.tsx' | 'react-native' | 'react-native.jsx' | 'react-native-tsx' | 'react-native.tsx' | 'vue' | 'vue3' | 'vue2' | 'vue-app' | 'app.vue' | 'svelte' | 'svelte-app' | 'app.svelte' | 'stencil' | 'stencil.tsx' | 'solid' | 'solid.jsx' | 'solid.tsx' | 'riot' | 'riotjs' | 'malina' | 'malinajs' | 'ripple' | 'ripplejs' | 'xht' | 'coffeescript' | 'coffee' | 'livescript' | 'ls' | 'civet' | 'clio' | 'imba' | 'assemblyscript' | 'as' | 'python' | 'py' | 'pyodide' | 'python-wasm' | 'py-wasm' | 'pythonwasm' | 'pywasm' | 'py3' | 'wasm.py' | 'r' | 'rlang' | 'rstats' | 'r-wasm' | 'ruby' | 'rb' | 'ruby-wasm' | 'wasm.rb' | 'rubywasm' | 'go' | 'golang' | 'go-wasm' | 'wasm.go' | 'gowasm' | 'php' | 'php-wasm' | 'phpwasm' | 'wasm.php' | 'cpp' | 'c' | 'C' | 'cp' | 'cxx' | 'c++' | 'cppm' | 'ixx' | 'ii' | 'hpp' | 'h' | 'cpp-wasm' | 'cppwasm' | 'cwasm' | 'wasm.cpp' | 'clang' | 'clang.cpp' | 'java' | 'csharp' | 'csharp-wasm' | 'cs' | 'cs-wasm' | 'wasm.cs' | 'perl' | 'pl' | 'pm' | 'lua' | 'lua-wasm' | 'luawasm' | 'wasm.lua' | 'teal' | 'tl' | 'fennel' | 'fnl' | 'julia' | 'jl' | 'scheme' | 'scm' | 'commonlisp' | 'common-lisp' | 'lisp' | 'clojurescript' | 'clojure' | 'cljs' | 'clj' | 'cljc' | 'edn' | 'gleam' | 'rescript' | 'res' | 'resi' | 'reason' | 're' | 'rei' | 'ocaml' | 'ml' | 'mli' | 'tcl' | 'wat' | 'wast' | 'webassembly' | 'wasm' | 'Binary' | 'sql' | 'sqlite' | 'sqlite3' | 'pg.sql' | 'pgsql.sql' | 'pgsql' | 'pg' | 'pglite' | 'pglite.sql' | 'postgresql' | 'postgres' | 'postgre.sql' | 'postgresql.sql' | 'prolog.pl' | 'prolog' | 'blockly' | 'blockly.xml' | 'xml' | 'pintora';
+    export type Language = 'html' | 'htm' | 'markdown' | 'md' | 'mdown' | 'mkdn' | 'mdx' | 'astro' | 'pug' | 'jade' | 'haml' | 'asciidoc' | 'adoc' | 'asc' | 'mustache' | 'handlebars' | 'hbs' | 'ejs' | 'eta' | 'nunjucks' | 'njk' | 'liquid' | 'liquidjs' | 'dot' | 'twig' | 'vento' | 'vto' | 'art-template' | 'art' | 'bbcode' | 'bb' | 'mjml' | 'diagrams' | 'diagram' | 'graph' | 'plt' | 'richtext' | 'rte' | 'rich' | 'rte.html' | 'css' | 'scss' | 'sass' | 'less' | 'stylus' | 'styl' | 'stylis' | 'postcss' | 'javascript' | 'js' | 'json' | 'babel' | 'es' | 'sucrase' | 'typescript' | 'flow' | 'ts' | 'jsx' | 'tsx' | 'react-native' | 'react-native.jsx' | 'react-native-tsx' | 'react-native.tsx' | 'vue' | 'vue3' | 'vue2' | 'svelte' | 'stencil' | 'stencil.tsx' | 'solid' | 'solid.jsx' | 'solid.tsx' | 'riot' | 'riotjs' | 'malina' | 'malinajs' | 'xht' | 'coffeescript' | 'coffee' | 'livescript' | 'ls' | 'civet' | 'clio' | 'imba' | 'assemblyscript' | 'as' | 'python' | 'py' | 'pyodide' | 'python-wasm' | 'py-wasm' | 'pythonwasm' | 'pywasm' | 'py3' | 'wasm.py' | 'r' | 'rlang' | 'rstats' | 'r-wasm' | 'ruby' | 'rb' | 'ruby-wasm' | 'wasm.rb' | 'rubywasm' | 'go' | 'golang' | 'php' | 'php-wasm' | 'phpwasm' | 'wasm.php' | 'cpp' | 'c' | 'C' | 'cp' | 'cxx' | 'c++' | 'cppm' | 'ixx' | 'ii' | 'hpp' | 'h' | 'cpp-wasm' | 'cppwasm' | 'cwasm' | 'wasm.cpp' | 'clang' | 'clang.cpp' | 'perl' | 'pl' | 'pm' | 'lua' | 'lua-wasm' | 'luawasm' | 'wasm.lua' | 'teal' | 'tl' | 'fennel' | 'fnl' | 'julia' | 'jl' | 'scheme' | 'scm' | 'commonlisp' | 'common-lisp' | 'lisp' | 'clojurescript' | 'clojure' | 'cljs' | 'clj' | 'cljc' | 'edn' | 'gleam' | 'rescript' | 'res' | 'resi' | 'reason' | 're' | 'rei' | 'ocaml' | 'ml' | 'mli' | 'tcl' | 'wat' | 'wast' | 'webassembly' | 'wasm' | 'Binary' | 'csharp' | 'sql' | 'sqlite' | 'sqlite3' | 'pg.sql' | 'pgsql.sql' | 'pgsql' | 'pg' | 'pglite' | 'pglite.sql' | 'postgresql' | 'postgres' | 'postgre.sql' | 'postgresql.sql' | 'prolog.pl' | 'prolog' | 'blockly' | 'blockly.xml' | 'xml' | 'pintora';
     export interface Editor {
             /**
                 * A language name, extension or alias (as defined in [language documentations](https://livecodes.io/docs/languages/)).
                 *
-                * For the list of supported values, see [Language](https://livecodes.io/docs/api/type-aliases/Language)
+                * For the list of supported values, see [Language](https://livecodes.io/docs/api/modules#language)
                 */
             language: Language;
+            /**
+                * If set, this is used as the title of the editor in the UI,
+                * overriding the default title set to the language name
+                * (e.g. `"Python"` can be used instead of `"Py (Wasm)"`).
+                */
+            title?: string;
             /**
                 * The initial content of the code editor.
                 * @default ""
@@ -877,33 +836,6 @@ declare module 'livecodes/models' {
                 * The URL is only fetched if `hiddenContent` property had no value.
                 */
             hiddenContentUrl?: string;
-            /**
-                * Lines that get folded when the editor loads.
-                *
-                * This can be used for less relevant content.
-                * @example [{ from: 5, to: 8 }, { from: 15, to: 20 }]
-                */
-            foldedLines?: Array<{
-                    from: number;
-                    to: number;
-            }>;
-            /**
-                * If set, this is used as the title of the editor in the UI,
-                * overriding the default title set to the language name
-                * (e.g. `"Python"` can be used instead of `"Py (Wasm)"`).
-                */
-            title?: string;
-            /**
-                * If `true`, the title of the code editor is hidden, however its code is still evaluated.
-                *
-                * This can be useful in embedded playgrounds (e.g. for hiding unnecessary code).
-                */
-            hideTitle?: boolean;
-            /**
-                * The order of the editor in the UI.
-                * @default 0
-                */
-            order?: number;
             /**
                 * A CSS selector to load content from [DOM import](https://livecodes.io/docs/features/import#import-code-from-dom).
                 */
@@ -966,7 +898,7 @@ declare module 'livecodes/models' {
             hidden?: boolean;
     }
     export type Processor = 'postcss' | 'postcssImportUrl' | 'tailwindcss' | 'windicss' | 'unocss' | 'tokencss' | 'lightningcss' | 'autoprefixer' | 'postcssPresetEnv' | 'cssmodules' | 'purgecss' | 'cssnano';
-    export type ParserName = 'babel' | 'babel-ts' | 'babel-flow' | 'glimmer' | 'html' | 'markdown' | 'css' | 'scss' | 'less' | 'php' | 'pug' | 'java';
+    export type ParserName = 'babel' | 'babel-ts' | 'babel-flow' | 'glimmer' | 'html' | 'markdown' | 'css' | 'scss' | 'less' | 'php' | 'pug';
     export interface Parser {
             name: ParserName;
             plugins?: any[];
@@ -1000,7 +932,6 @@ declare module 'livecodes/models' {
             modifiedHTML?: string;
             importedContent?: string;
             imports?: Record<string, string>;
-            errors?: string[];
     }
     export interface CompileResult {
             code: string;
@@ -1038,7 +969,7 @@ declare module 'livecodes/models' {
                     baseUrl: string;
             }) => Promise<string>);
             loadAsExternalModule?: boolean;
-            scriptType?: 'module' | 'text/liquid' | 'text/python' | 'text/r' | 'text/ruby-wasm' | 'text/x-uniter-php' | 'text/php-wasm' | 'text/cpp' | 'text/java' | 'text/csharp-wasm' | 'text/perl' | 'text/julia' | 'text/biwascheme' | 'text/commonlisp' | 'text/tcl' | 'text/prolog' | 'text/go-wasm' | 'application/json' | 'application/lua' | 'text/fennel' | 'application/wasm-uint8';
+            scriptType?: 'module' | 'text/liquid' | 'text/python' | 'text/r' | 'text/ruby-wasm' | 'text/x-uniter-php' | 'text/php-wasm' | 'text/cpp' | 'text/perl' | 'text/julia' | 'text/biwascheme' | 'text/commonlisp' | 'text/tcl' | 'text/prolog' | 'application/json' | 'application/lua' | 'text/fennel' | 'application/wasm-uint8';
             liveReload?: boolean;
             aliasTo?: Language;
             compiledCodeLanguage?: Language;
@@ -1057,10 +988,10 @@ declare module 'livecodes/models' {
             tools?: Config['tools'];
             autotest?: Config['autotest'];
     };
-    export type TemplateName = 'blank' | 'javascript' | 'typescript' | 'react' | 'react-native' | 'vue2' | 'vue' | 'angular' | 'preact' | 'svelte' | 'solid' | 'lit' | 'stencil' | 'mdx' | 'astro' | 'riot' | 'malina' | 'jquery' | 'backbone' | 'knockout' | 'jest' | 'jest-react' | 'bootstrap' | 'tailwindcss' | 'shadcn-ui' | 'daisyui' | 'd3' | 'phaser' | 'coffeescript' | 'livescript' | 'civet' | 'clio' | 'imba' | 'rescript' | 'reason' | 'ocaml' | 'python' | 'pyodide' | 'python-wasm' | 'r' | 'ruby' | 'ruby-wasm' | 'go' | 'go-wasm' | 'php' | 'php-wasm' | 'cpp' | 'clang' | 'cpp-wasm' | 'java' | 'csharp-wasm' | 'perl' | 'lua' | 'lua-wasm' | 'teal' | 'fennel' | 'julia' | 'scheme' | 'commonlisp' | 'clojurescript' | 'gleam' | 'tcl' | 'markdown' | 'assemblyscript' | 'wat' | 'sql' | 'postgresql' | 'prolog' | 'blockly' | 'diagrams';
+    export type TemplateName = 'blank' | 'javascript' | 'typescript' | 'react' | 'react-native' | 'vue2' | 'vue' | 'angular' | 'preact' | 'svelte' | 'solid' | 'lit' | 'stencil' | 'mdx' | 'astro' | 'riot' | 'malina' | 'jquery' | 'backbone' | 'knockout' | 'jest' | 'jest-react' | 'bootstrap' | 'tailwindcss' | 'coffeescript' | 'livescript' | 'civet' | 'clio' | 'imba' | 'rescript' | 'reason' | 'ocaml' | 'python' | 'pyodide' | 'python-wasm' | 'r' | 'ruby' | 'ruby-wasm' | 'go' | 'php' | 'php-wasm' | 'cpp' | 'clang' | 'cpp-wasm' | 'perl' | 'lua' | 'lua-wasm' | 'teal' | 'fennel' | 'julia' | 'scheme' | 'commonlisp' | 'clojurescript' | 'gleam' | 'tcl' | 'markdown' | 'assemblyscript' | 'wat' | 'sql' | 'postgresql' | 'prolog' | 'blockly' | 'diagrams';
     export interface Tool {
             name: 'console' | 'compiled' | 'tests';
-            title: string;
+            title: 'Console' | 'Compiled' | 'Tests';
             load: () => Promise<void>;
             onActivate: () => void;
             onDeactivate: () => void;
@@ -1072,7 +1003,7 @@ declare module 'livecodes/models' {
             factory: (config: Config, baseUrl: string, editors: Editors, eventsManager: EventsManager, isEmbed: boolean, runTests: () => Promise<void>) => Tool;
     }>;
     export interface Console extends Tool {
-            title: string;
+            title: 'Console';
             log: (...args: any[]) => void;
             info: (...args: any[]) => void;
             table: (...args: any[]) => void;
@@ -1081,15 +1012,14 @@ declare module 'livecodes/models' {
             clear: (silent?: boolean) => void;
             evaluate: (code: string) => void;
             reloadEditor: (config: Config) => Promise<void>;
-            setTheme?: (theme: Theme) => void;
     }
     export interface CompiledCodeViewer extends Tool {
-            title: string;
+            title: 'Compiled';
             update: (language: Language, content: string, label?: string | undefined) => void;
             reloadEditor: (config: Config) => Promise<void>;
     }
     export interface TestViewer extends Tool {
-            title: string;
+            title: 'Tests';
             showResults: ({ results, error }: {
                     results: TestResult[];
                     error?: string;
@@ -1121,11 +1051,6 @@ declare module 'livecodes/models' {
             focus: () => void;
             getPosition: () => EditorPosition;
             setPosition: (position: EditorPosition) => void;
-            foldRegions?: () => void | Promise<void>;
-            foldLines?: (linesToFold: Array<{
-                    from: number;
-                    to: number;
-            }>) => void | Promise<void>;
             layout?: () => void;
             addTypes?: (lib: EditorLibrary, force?: boolean) => any;
             onContentChanged: (callback: () => void) => void;
@@ -1139,7 +1064,6 @@ declare module 'livecodes/models' {
                     ShiftAltF: any;
             };
             changeSettings: (editorSettings: EditorConfig) => void;
-            configureTailwindcss?: (enabled: boolean) => void;
             registerFormatter: (formatFn: FormatFn | undefined) => void;
             format: () => Promise<void>;
             isReadonly: boolean;
@@ -1160,19 +1084,18 @@ declare module 'livecodes/models' {
             value: string;
             mode?: Config['mode'];
             readonly: boolean;
-            editorId: EditorId | 'compiled' | 'console' | 'customSettings' | 'editorSettings' | 'codeToImage' | 'tests' | 'embed' | 'snippet' | 'add-snippet';
+            editorId: EditorId | 'compiled' | 'console' | 'customSettings' | 'editorSettings' | 'tests' | 'embed' | 'snippet' | 'add-snippet';
             theme: Theme;
             isEmbed: boolean;
-            isLite: boolean;
             isHeadless: boolean;
             getLanguageExtension: (alias: string) => Language | undefined;
             mapLanguage: (language: Language) => Language;
             getFormatterConfig: () => Partial<FormatterConfig>;
             getFontFamily: (font: string | undefined) => string;
     }
-    export type MonacoTheme = 'active4d' | 'all-hallows-eve' | 'amy' | 'birds-of-paradise' | 'blackboard' | 'brilliance-black' | 'brilliance-dull' | 'catppuccin-latte' | 'catppuccin-frappe' | 'catppuccin-macchiato' | 'catppuccin-mocha' | 'chrome-devtools' | 'clouds-midnight' | 'clouds' | 'cobalt' | 'cobalt2' | 'custom-vs-light' | 'custom-vs-dark' | 'dawn' | 'dracula' | 'dreamweaver' | 'eiffel' | 'espresso-libre' | 'github' | 'github-dark' | 'github-light' | 'hc-black' | 'hc-light' | 'idle' | 'idlefingers' | 'iplastic' | 'katzenmilch' | 'krtheme' | 'kuroir' | 'lazy' | 'magicwb-amiga' | 'merbivore-soft' | 'merbivore' | 'monochrome' | 'monochrome-dark' | 'monokai' | 'monokai-bright' | 'monoindustrial' | 'night-owl' | 'nord' | 'oceanic-next' | 'pastels-on-dark' | 'slush-and-poppies' | 'solarized-dark' | 'solarized-light' | 'spacecadet' | 'sunburst' | 'textmate-mac-classic' | 'tomorrow' | 'tomorrow-night' | 'tomorrow-night-blue' | 'tomorrow-night-bright' | 'tomorrow-night-eighties' | 'twilight' | 'upstream-sunburst' | 'vibrant-ink' | 'vs' | 'vs-dark' | 'xcode-default' | 'zenburnesque';
-    export type CodemirrorTheme = 'amy' | 'aura' | 'ayu-light' | 'barf' | 'basic-light' | 'basic-dark' | 'bespin' | 'birds-of-paradise' | 'boys-and-girls' | 'catppuccin-latte' | 'catppuccin-frappe' | 'catppuccin-macchiato' | 'catppuccin-mocha' | 'clouds' | 'cm-light' | 'cobalt' | 'cool-glow' | 'dracula' | 'espresso' | 'github-dark' | 'github-light' | 'gruvbox-dark' | 'gruvbox-light' | 'material-dark' | 'material-light' | 'monochrome' | 'monochrome-dark' | 'noctis-lilac' | 'nord' | 'one-dark' | 'rose-pine-dawn' | 'smoothy' | 'solarized-light' | 'solarized-dark' | 'tokyo-night' | 'tokyo-night-day' | 'tokyo-night-storm' | 'tomorrow';
-    export type CodejarTheme = 'a11y-dark' | 'atom-dark' | 'base16-ateliersulphurpool-light' | 'catppuccin-latte' | 'catppuccin-frappe' | 'catppuccin-macchiato' | 'catppuccin-mocha' | 'cb' | 'coldark-cold' | 'coldark-dark' | 'coy' | 'coy-without-shadows' | 'darcula' | 'dark' | 'dracula' | 'duotone-dark' | 'duotone-earth' | 'duotone-forest' | 'duotone-light' | 'duotone-sea' | 'duotone-space' | 'funky' | 'ghcolors' | 'gruvbox-dark' | 'gruvbox-light' | 'holi-theme' | 'hopscotch' | 'laserwave' | 'lucario' | 'material-dark' | 'material-light' | 'material-oceanic' | 'monochrome' | 'monochrome-dark' | 'night-owl' | 'nord' | 'nord-2' | 'okaidia' | 'one-dark' | 'one-light' | 'pojoaque' | 'shades-of-purple' | 'solarized-dark-atom' | 'solarized-light' | 'synthwave84' | 'tomorrow' | 'twilight' | 'vs' | 'vsc-dark-plus' | 'xonokai' | 'z-touchs';
+    export type MonacoTheme = 'active4d' | 'all-hallows-eve' | 'amy' | 'birds-of-paradise' | 'blackboard' | 'brilliance-black' | 'brilliance-dull' | 'chrome-devtools' | 'clouds-midnight' | 'clouds' | 'cobalt' | 'cobalt2' | 'custom-vs-light' | 'custom-vs-dark' | 'dawn' | 'dracula' | 'dreamweaver' | 'eiffel' | 'espresso-libre' | 'github' | 'github-dark' | 'github-light' | 'hc-black' | 'hc-light' | 'idle' | 'idlefingers' | 'iplastic' | 'katzenmilch' | 'krtheme' | 'kuroir' | 'lazy' | 'magicwb-amiga' | 'merbivore-soft' | 'merbivore' | 'monochrome' | 'monochrome-dark' | 'monokai' | 'monokai-bright' | 'monoindustrial' | 'night-owl' | 'nord' | 'oceanic-next' | 'pastels-on-dark' | 'slush-and-poppies' | 'solarized-dark' | 'solarized-light' | 'spacecadet' | 'sunburst' | 'textmate-mac-classic' | 'tomorrow' | 'tomorrow-night' | 'tomorrow-night-blue' | 'tomorrow-night-bright' | 'tomorrow-night-eighties' | 'twilight' | 'upstream-sunburst' | 'vibrant-ink' | 'vs' | 'vs-dark' | 'xcode-default' | 'zenburnesque';
+    export type CodemirrorTheme = 'amy' | 'aura' | 'ayu-light' | 'barf' | 'basic-light' | 'basic-dark' | 'bespin' | 'birds-of-paradise' | 'boys-and-girls' | 'clouds' | 'cm-light' | 'cobalt' | 'cool-glow' | 'dracula' | 'espresso' | 'github-dark' | 'github-light' | 'gruvbox-dark' | 'gruvbox-light' | 'material-dark' | 'material-light' | 'monochrome' | 'monochrome-dark' | 'noctis-lilac' | 'nord' | 'one-dark' | 'rose-pine-dawn' | 'smoothy' | 'solarized-light' | 'solarized-dark' | 'tokyo-night' | 'tokyo-night-day' | 'tokyo-night-storm' | 'tomorrow';
+    export type CodejarTheme = 'a11y-dark' | 'atom-dark' | 'base16-ateliersulphurpool-light' | 'cb' | 'coldark-cold' | 'coldark-dark' | 'coy' | 'coy-without-shadows' | 'darcula' | 'dark' | 'dracula' | 'duotone-dark' | 'duotone-earth' | 'duotone-forest' | 'duotone-light' | 'duotone-sea' | 'duotone-space' | 'funky' | 'ghcolors' | 'gruvbox-dark' | 'gruvbox-light' | 'holi-theme' | 'hopscotch' | 'laserwave' | 'lucario' | 'material-dark' | 'material-light' | 'material-oceanic' | 'monochrome' | 'monochrome-dark' | 'night-owl' | 'nord' | 'okaidia' | 'one-dark' | 'one-light' | 'pojoaque' | 'shades-of-purple' | 'solarized-dark-atom' | 'solarized-light' | 'synthwave84' | 'tomorrow' | 'twilight' | 'vs' | 'vsc-dark-plus' | 'xonokai' | 'z-touchs';
     export type EditorTheme = MonacoTheme | CodemirrorTheme | CodejarTheme | `${MonacoTheme}@${Theme}` | `${CodemirrorTheme}@${Theme}` | `${CodejarTheme}@${Theme}` | `monaco:${MonacoTheme}` | `codemirror:${CodemirrorTheme}` | `codejar:${CodejarTheme}` | `monaco:${MonacoTheme}@${Theme}` | `codemirror:${CodemirrorTheme}@${Theme}` | `codejar:${CodejarTheme}@${Theme}`;
     export interface CustomEditor {
             language: Language;
@@ -1194,7 +1117,6 @@ declare module 'livecodes/models' {
             xml?: string;
             js?: string;
     }
-    export type AppLanguage = 'auto' | 'ar' | 'de' | 'en' | 'es' | 'fa' | 'fr' | 'hi' | 'it' | 'ja' | 'pt' | 'ru' | 'ur' | 'zh-CN';
     export interface User {
             uid: string;
             token: string | null;
@@ -1209,7 +1131,7 @@ declare module 'livecodes/models' {
             title: string;
     }
     export interface Screen {
-            screen: 'login' | 'info' | 'new' | 'open' | 'assets' | 'add-asset' | 'snippets' | 'add-snippet' | 'import' | 'resources' | 'share' | 'embed' | 'deploy' | 'sync' | 'backup' | 'broadcast' | 'welcome' | 'about' | 'custom-settings' | 'editor-settings' | 'code-to-image' | 'test-editor' | 'keyboard-shortcuts';
+            screen: 'login' | 'info' | 'new' | 'open' | 'assets' | 'add-asset' | 'snippets' | 'add-snippet' | 'import' | 'resources' | 'share' | 'embed' | 'deploy' | 'sync' | 'backup' | 'broadcast' | 'welcome' | 'about' | 'custom-settings' | 'editor-settings' | 'test-editor';
             show: (options?: any) => void | Promise<unknown>;
     }
     export type CustomSettings = Partial<{
@@ -1308,11 +1230,9 @@ declare module 'livecodes/models' {
     } & {
             [key in languageSelector]: string;
     } & {
-            sdkVersion: string;
             config: string;
             embed: boolean;
             preview: boolean;
-            lite: boolean;
             x: string;
             files: string;
             raw: Language;
@@ -1333,10 +1253,7 @@ declare module 'livecodes/models' {
             [key in Tool['name']]: 'open' | 'full' | 'closed' | 'none' | '' | 'true';
     }>;
     export interface CustomEvents {
-            init: 'livecodes-init';
-            /** @deprecated config is sent in hash params */
             getConfig: 'livecodes-get-config';
-            /** @deprecated config is sent in hash params */
             config: 'livecodes-config';
             load: 'livecodes-load';
             appLoaded: 'livecodes-app-loaded';
@@ -1347,7 +1264,6 @@ declare module 'livecodes/models' {
             destroy: 'livecodes-destroy';
             resizeEditor: 'livecodes-resize-editor';
             apiResponse: 'livecodes-api-response';
-            i18n: 'livecodes-i18n';
     }
     export interface PkgInfo {
             name: string;
@@ -1386,7 +1302,6 @@ declare module 'livecodes/models' {
     }
 }
 declare module 'livecodes/react' {
-    import React from 'react';
     import type { EmbedOptions, Playground } from 'livecodes/models';
     export interface Props extends EmbedOptions {
         className?: string;
@@ -1403,12 +1318,11 @@ declare module 'livecodes/react' {
       * @prop {string} [appUrl] - The URL of the LiveCodes app. Defaults to `https://livecodes.io/`.
       * @prop {object | string} [config] - The [config object](https://livecodes.io/docs/api/interfaces/Config) for the playground or the URL of the config file.
       * @prop {string} [import] - A resource to [import](https://livecodes.io/docs/features/import) (from any of the supported [sources](https://livecodes.io/docs/features/import#sources)).
-      * @prop {boolean} [headless=false] - Whether to use the headless mode of LiveCodes.
-      * @prop {boolean} [lite=false] - Deprecated! Use `config={{ mode: "lite" }}` instead - Whether to use the lite mode of LiveCodes.
+      * @prop {boolean} [lite=false] - Whether to use the lite mode of LiveCodes.
       * @prop {string} [loading='lazy'] - When to load the playground.
       * @prop {object} [params] - An object that represents [URL Query parameters](https://livecodes.io/docs/configuration/query-params).
       * @prop {string} [template] - A [starter template](https://livecodes.io/docs/features/templates) to load.
-      * @prop {string} [view='split'] - Deprecated! The `view` option has been moved to `config.view`. For headless mode use `headless="true"` - The [default view](https://livecodes.io/docs/features/default-view) for the playground.
+      * @prop {string} [view='split'] - The [default view](https://livecodes.io/docs/features/default-view) for the playground.
       * @prop {string} [height] - Sets the [height of playground container](https://livecodes.io/docs/sdk/js-ts#height) element.
       * @prop {string} [className] - Sets the class name of playground container element.
       * @prop {object} [style] - Sets the style of playground container element.
@@ -1426,11 +1340,11 @@ declare module 'livecodes/react' {
       * export const Playground = () => <LiveCodes config={config} />;
       * ```
       */
-    export default function LiveCodes(props: Props): React.ReactElement<Props>;
+    export default function LiveCodes(props: Props): JSX.Element;
 }
 declare module 'livecodes/vue' {
-    import type { AllowedComponentProps, ComponentCustomProps, ComponentOptionsMixin, DefineComponent, ExtractPropTypes, RendererElement, RendererNode, VNode, VNodeProps } from '@vue/runtime-core';
-    import type { EmbedOptions, Playground } from 'livecodes/models';
+    import type { DefineComponent, AllowedComponentProps, ComponentCustomProps, ComponentOptionsMixin, ExtractPropTypes, RendererElement, RendererNode, VNode, VNodeProps } from '@vue/runtime-core';
+    import type { Playground, EmbedOptions } from 'livecodes/models';
     export interface Props extends EmbedOptions {
         height?: string;
     }
@@ -1443,12 +1357,11 @@ declare module 'livecodes/vue' {
       * @prop {string} [appUrl] - The URL of the LiveCodes app. Defaults to `https://livecodes.io/`.
       * @prop {object | string} [config] - The [config object](https://livecodes.io/docs/api/interfaces/Config) for the playground or the URL of the config file.
       * @prop {string} [import] - A resource to [import](https://livecodes.io/docs/features/import) (from any of the supported [sources](https://livecodes.io/docs/features/import#sources)).
-      * @prop {boolean} [headless=false] - Whether to use the headless mode of LiveCodes.
-      * @prop {boolean} [lite=false] - Deprecated! Use `config={{ mode: "lite" }}` instead - Whether to use the lite mode of LiveCodes.
+      * @prop {boolean} [lite=false] - Whether to use the lite mode of LiveCodes.
       * @prop {string} [loading='lazy'] - When to load the playground.
       * @prop {object} [params] - An object that represents [URL Query parameters](https://livecodes.io/docs/configuration/query-params).
       * @prop {string} [template] - A [starter template](https://livecodes.io/docs/features/templates) to load.
-      * @prop {string} [view='split'] - Deprecated! The `view` option has been moved to `config.view`. For headless mode use `headless="true"` - The [default view](https://livecodes.io/docs/features/default-view) for the playground.
+      * @prop {string} [view='split'] - The [default view](https://livecodes.io/docs/features/default-view) for the playground.
       * @prop {string} [height] - Sets the [height of playground container](https://livecodes.io/docs/sdk/js-ts#height) element.
       * @prop {object} [style] - Sets the style of playground container element.
       * @emits {event} [sdkReady] - When the playground initializes, the event `"sdkReady"` is emitted.
